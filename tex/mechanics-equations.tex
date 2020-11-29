@@ -50,6 +50,66 @@
 	
 	\section{Problem Types}
 	
+	\subsection{Find the Equilibrium Configuration}
+	
+	\textit{From Fetter and Walecka, P3.1:} Say a wire bent into a vertical circle with radius $a$ rotates at angular velocity $\Omega$, with gravity $\textbf{g}$, has a bead of mass $m$ free to move on the wire. 
+	
+	The Lagrangian would be
+	\[
+	\mathcal{L} = T - U = \frac{m}{2}\left( a^2 \dot{\theta}^2 + a^2 \sin^2 \theta \Omega^2  \right) + a \cos \theta mg
+	\]
+	and the one Euler-Lagrange equation would turn out to be
+	\[
+	\ddot{\theta} = \sin \theta \cos \theta \Omega^2 - \frac{g}{a} \sin \theta
+	\]
+	\textbf{To find the equilibrium position, we need to find a point where, if $\theta$ is stationary, then it remains stationary.} I.e., where $\ddot{\theta} = 0$. Thus we simply set
+	\[
+	0 = \sin \theta \cos \theta \Omega^2 - \frac{g}{a} \sin \theta
+	\]
+	And we find an equilibrium with condition
+	\[
+	\cos \theta_0 = \frac{g}{a \Omega^2}
+	\]
+	
+	\subsection{find stability or frequency of oscillations about equilibrium}
+	
+	\subsection{Solve the Brachistochrone Problem}
+	
+	Just like we minimize the action
+	\[
+	S = \int \mathcal{L}(q, \dot{q}) dt
+	\]
+	equivalent to
+	\[
+	\frac{d}{dt} \frac{\partial \mathcal{L}}{\partial \dot{q}} - \frac{\partial \mathcal{L}}{\partial q}= 0
+	\]
+	we can minimize the time
+	\[
+	t_{12} = \int_1^{2} \frac{ds}{v}
+	\]
+	where $v$ is the velocity. Often we can use energy conservation to get
+	\[
+	v = \sqrt{2gy}
+	\]
+	where $y$ is the height, and if the particle is following a sloped path
+	\[
+	t_{12} = \int_1^{2} \sqrt{\frac{1 + (y')^2}{2gy} } dx
+	\]
+	Then writing
+	\[
+	\Phi = \left[ \frac{1 + (y')}{2gy} \right]^{1/2}
+	\]
+	the minimization condition is 
+	\[
+	\frac{d}{dx} \frac{\partial \Phi}{\partial y'} - \frac{\partial \Phi}{dy} = 0
+	\]
+	
+	
+	Note that earlier we could have changed our ``time-analogous'' coordinate and instead written
+	changing the ``time-like'' variable
+	\[
+	t_{12} = \int_1^{2} \sqrt{\frac{1 + (x')^2}{2gy} } dy
+	\]
 	\section{Derivations}
 	
 	\section{Concepts}
@@ -81,22 +141,9 @@
 	\]
 	the dynamics are exactly the same for \textit{any} function $f(x,t)$. 
 	
-	\subsection{Parallel Axis Theorem}
-	\textbf{Also called Steiner's Theorem}
 	
-	Given the moment of inertia about the center of mass, this theorem allows us to calculate the moment of inertia about an axis offset from the center (although still pointing in the same direction). For center-of-mass MoI $I_c$, mass $M$, and axis offset $h$, the new moment of inertia is
-	\[
-	I = I_c + Mh^2
-	\]
 	
-	\subsection{Hamilton-Jacobi Equation}
 	
-	For the Hamiltonian $\mathcal{H}$
-	\[
-	H
-	\]
-	
-	\subsection{Hamilton's Eq.'s}
 	
 	\chapter{Small Oscillations}
 	
@@ -118,6 +165,14 @@
 	
 	\section{Equations}
 	
+	\subsection{Parallel Axis Theorem}
+	\textbf{Also called Steiner's Theorem}
+	
+	Given the moment of inertia about the center of mass, this theorem allows us to calculate the moment of inertia about an axis offset from the center (although still pointing in the same direction). For center-of-mass MoI $I_c$, mass $M$, and axis offset $h$, the new moment of inertia is
+	\[
+	I = I_c + Mh^2
+	\]
+	
 	\chapter{Hamiltonian Dynamics}
 	
 	\section{Problem Types}
@@ -127,6 +182,15 @@
 	\section{Concepts}
 	
 	\section{Equations}
+	
+	\subsection{Hamilton-Jacobi Equation}
+	
+	For the Hamiltonian $\mathcal{H}$
+	\[
+	H
+	\]
+	
+	\subsection{Hamilton's Eq.'s}
 	
 	
 \end{document}
