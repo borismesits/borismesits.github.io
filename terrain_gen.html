@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Generic - Theory by TEMPLATED</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+    <script type="text/javascript">
+    window.languagePluginUrl = 'https://cdn.jsdelivr.net/pyodide/v0.15.0/full/';
+    </script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.15.0/full/pyodide.js"></script>
+</head>
+
+<body class="subpage">
+
+	<!-- Header -->
+		<header id="header">
+			<div class="inner">
+				<a href="fun-stuff.html" class="logo">Back to Fun Stuff</a>
+				<nav id="nav">
+			</div>
+		</header>
+			
+	<!-- Three -->
+			<section id="three" class="wrapper">
+				<div class="inner" id="container">		
+				<p></p>
+				<header>
+				<h2>Terrain Generator</h2> 
+				</header>
+				<p id='text'> You can generate your own terrain here. This is an experimental python project, so it is rather slow. Wait until the 
+				console says ready, then press Start Generator. IT TAKES ABOUT A MINUTE TO LOAD (I'm working on making it faster). 
+				When the generator has loaded, the generator controls will appear.
+				</p>
+				<button onclick='evaluatePython()'>Start Generator</button> <!-- Button that runs the JS code! -->
+				<br>
+				<br>
+				<div>
+				Console:
+				</div>
+				<textarea id='output' style='width: 100%;' rows='6' disabled></textarea>
+
+				<script> <!-- this JS script runs on startup -->
+    const output = document.getElementById("output");
+    const text = document.getElementById("text");
+	
+	addToOutput('Starting...')
+
+	addToOutput('Initializing...')
+
+    function addToOutput(s) {
+      output.value += '>>> ' + s + '\n';
+    }
+
+	//the follwing is python code that contains almost all the python we want to do
+	code = `
+from js import document # for interacting with JS
+import io, base64 # for saving the figure
+
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from scipy.interpolate import interp2d
+
+def noise_map(Nx, Ny, octaves, persistence, lacunarity, seed):
+    
+    #note this map has periodic boundaries and is thrice differentiable
+    
+    #octaves - the number of noise layers
+    #persistence - analgous to the coefficients of a fourier series
+    #lacunarity - rate at which higher octaves get smaller
+    
+    if (Nx < 4 or Ny < 4):
+        print('hey your grid is too small bro')
+        return
+    
+    persistence_scale = 0.5
+    lacunarity_scale = 0.3
+    
+    noise = np.zeros([Nx,Ny])
+    
+    for i in range(0,octaves):
+        n = np.min([round(1/lacunarity_scale),Nx,Ny]) + 1
+		
+        noise_n = np.random.rand(n,n)
+        
+        x = np.linspace(0,1,n+6)
+        y = np.linspace(0,1,n+6)
+        
+        noise_n_ext = np.zeros([6+n,6+n])  # plus 6 to add three points on either side, for periodic boundaries
+        
+        noise_n_ext[3:-3,3:-3] = noise_n #middle
+        noise_n_ext[0:3,0:3] = noise_n[-3:,-3:] #upper left
+        noise_n_ext[0:3,3:-3] = noise_n[-3:,:] #upper center
+        noise_n_ext[0:3,-3:] = noise_n[-3:,0:3] #upper right
+        noise_n_ext[3:-3,0:3] = noise_n[:,-3:] #center left
+        noise_n_ext[3:-3,-3:] = noise_n[:,0:3] #center right
+        noise_n_ext[-3:,0:3] = noise_n[0:3,-3:] #lower left
+        noise_n_ext[-3:,3:-3] = noise_n[0:3,:] #lower center
+        noise_n_ext[-3:,-3:] = noise_n[0:3,0:3] #lower right
+        
+        fit_factor = 6/(n+6) /2
+        
+        xI = np.linspace(fit_factor,1-fit_factor,Nx)
+        yI = np.linspace(fit_factor,1-fit_factor,Ny)
+        
+        spline_model = interp2d(x,y,noise_n_ext,kind='cubic')
+        
+        noiseInterp = spline_model(xI,yI)
+        
+        noise = noise + noiseInterp*persistence_scale
+        
+        persistence_scale = persistence_scale**persistence
+        lacunarity_scale = lacunarity_scale**lacunarity
+        
+    return noise/np.max(noise)
+
+def bimodal(vals):
+    param = 4*np.pi
+    return (vals*param + np.sin(vals*param))/param
+
+def crater(x,y,radius,depth,terrain):
+    def hvr(r):
+        return np.sin(2*r**4)*np.exp(-r**4)
+    (nx,ny) = np.shape(terrain)
+    
+    for i in range(-2*radius+x,2*radius+x):
+        for j in range(-2*radius+y,2*radius+y):
+            R = np.sqrt((i-x)**2 + (j-y)**2)
+            terrain[i%nx,j%ny] = terrain[i%nx,j%ny] + depth*hvr(R/radius)
+ 
+def craterize(terrain,amount):
+    (nx,ny) = np.shape(terrain)
+    for i in range(0, amount):
+        x = int(np.random.rand()*nx)
+        y = int(np.random.rand()*ny)
+        size = np.random.rand()**2
+        radius = int(size*30)
+        depth = np.sqrt(size)*0.1
+        crater(x,y,radius,depth,terrain)
+
+def noise(nx,ny,cutoff,release):
+    a = 1
+    
+    x = np.linspace(0,a,nx)
+    y = np.linspace(0,a,ny)
+    
+    YY,XX = np.meshgrid(y,x)
+    
+    ZZ = np.random.rand(len(x),len(y))
+    
+    aa = np.fft.fft2(ZZ)
+    aa[0,0] = 0
+    
+    tightness = release
+    
+    cutoff = cutoff*1e10
+    
+    R1 = (XX**2 + YY**2)
+    R2 = ((XX-1)**2 + (YY-1)**2)
+    R3 = ((XX)**2 + (YY-1)**2)
+    R4 = ((XX-1)**2 + (YY)**2)
+    
+    WW = R1**(-tightness)*(1-np.exp(-cutoff*R1**2))
+    WW = WW + R2**(-tightness)*(1-np.exp(-cutoff*R2**2))
+    WW = WW + R3**(-tightness)*(1-np.exp(-cutoff*R3**2))
+    WW = WW + R4**(-tightness)*(1-np.exp(-cutoff*R4**2))
+    
+    WW[0,0] = 0
+    WW[-1,0] = 0
+    WW[0,-1] = 0
+    WW[-1,-1] = 0
+    
+    #plt.imshow(WW)
+    
+    ab = aa*WW
+    
+    terrain = np.real(np.fft.ifft2(ab))
+    
+    terrain = terrain/np.max(terrain)
+    
+    return terrain
+	
+def landsat(terrain,sea_level):
+    colormap = bimodal(terrain.copy())
+    
+    colormap[np.where(terrain < sea_level)] = 0.35
+    colormap[np.where(terrain < sea_level-0.05)] = 0.3
+    
+    #plt.plot_surface(colormap)
+    
+    plt.clf()
+    plt.pcolormesh(colormap,cmap='gist_earth',vmin=0.2, vmax=1.0)
+    plt.colorbar()
+
+div_container = document.createElement('div') # now we call some HTML from python to add it to the page
+div_container.innerHTML = '''
+<br>
+<br>
+<h> Generator Ready!
+</h>
+<p>
+These are the generator controls. The persistence and lacunarity are two numbers that determine the style of terrain - mess around to see what you get! I
+personally like both values set to 3.
+</p>
+<br>
+Persistence:
+<input id='mu' value='1' type="number">
+<br><br>
+Lacunarity:
+<input id='sigma' value='1' type="number">
+<br><br>
+Seed:
+<input id='seed' value='1' type="number">
+<br><br>
+<button onclick='pyodide.globals.generate_plot_img()'>Plot</button>
+<br>
+<img id="fig" />''' 
+document.getElementById("container").appendChild(div_container)
+
+def generate_plot_img():
+	# get values from inputs
+	print('1')
+	mu = int(document.getElementById('mu').value)
+	sigma = int(document.getElementById('sigma').value)  # generate an interval
+	seed = int(document.getElementById('seed').value)  # generate an interval
+	print('2')
+	persistence = 1+ 0.1*mu
+	lacunarity = 1+ 0.1*sigma
+	
+	print('start')
+	terrain = noise_map(200, 200, 6, persistence, lacunarity, seed)
+	print('end')
+	landsat(terrain,0.65)
+	print('3')
+	buf = io.BytesIO()
+	# copy the plot into the buffer
+	plt.savefig(buf, format='png')
+	buf.seek(0)
+	print('4')
+	# encode the image as Base64 string
+	img_str = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')  # show the image
+	img_tag = document.getElementById('fig')
+	img_tag.src = img_str
+	buf.close()
+	print('5')
+`
+//end of python code
+    
+    // init pyodide
+    languagePluginLoader.then(() => { addToOutput('Ready!'); });
+
+    function evaluatePython() {
+		addToOutput('Loading Generator...');
+		console.log(pyodide.runPythonAsync(code));
+    }
+
+	</script>
+	</div>
+	</section>
+  <!-- Footer -->
+			<footer id="footer">
+				<div class="inner">
+					<div class="flex">
+						<div class="copyright">
+							&copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a href="https://unsplash.com">Unsplash</a>.
+						</div>
+						<ul class="icons">
+							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+							<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="#" class="icon fa-linkedin"><span class="label">linkedIn</span></a></li>
+							<li><a href="#" class="icon fa-pinterest-p"><span class="label">Pinterest</span></a></li>
+							<li><a href="#" class="icon fa-vimeo"><span class="label">Vimeo</span></a></li>
+						</ul>
+					</div>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,132 @@
+\documentclass[25pt]{book}
+\usepackage{amsmath}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage{ gensymb }
+\usepackage{wasysym}
+\usepackage{multicol}
+\usepackage{braket}
+\usepackage{dsfont}
+\usepackage{url}
+\usepackage{bm}
+\usepackage{float}
+\usepackage[margin=1in]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue,urlcolor=black,bookmarksopen=true]{hyperref}
+
+\begin{document}
+	
+	\tableofcontents
+	
+	\chapter{Basic Principles}
+	
+	\section{Problem Types}
+	
+	\section{Derivations}
+	
+	\section{Concepts}
+	
+	\section{Equations}
+	
+	\chapter{Accelerated Coordinate Systems}
+	
+	\section{Problem Types}
+	
+	\section{Derivations}
+	
+	\section{Concepts}
+	
+	\section{Equations}
+	
+	\subsection{General Fictitious Forces Eq.}
+	
+	Say we have a particle, which we can observe in an inertial frame $S$ and some other frame $S'$ (maybe non-inertial), called the \textit{body} frame, which is moving relative to the inertial frame. The position of $S'$ relative to $S$ is $\textbf{a}$. The angular velocity of $S'$ is $\bm{\omega}$ (same for both frames, as angular velocity does not depend on frame). The position of the particle in the body frame $S'$ is $\textbf{r}$ and is $\textbf{r}_0$ in $S$. Then
+	\[
+	m \left( \frac{d^2 \textbf{r}}{dt^2} \right)_{\text{body}} = m \left( \frac{d^2 \textbf{r}_0}{dt^2} \right)_{\text{inertial}}
+	- m \left( \frac{d^2 \textbf{a}}{dt^2} \right)_{\text{inertial}} - 2 m \bm{\omega} \times \left( \frac{d \textbf{r}}{dt} \right) - m \bm{\omega} \times \left( \omega \times \textbf{r} \right) - m \frac{d\omega}{dt} \times \textbf{r}
+	\]
+	Note that the $m \left( \frac{d^2 \textbf{r}_0}{dt^2} \right)_{\text{inertial}}$ term is just the external force in the inertial frame. That is, it is the term which represents the ``real'' forces. 
+	
+	\chapter{Lagrangian Dynamics}
+	
+	\section{Problem Types}
+	
+	\section{Derivations}
+	
+	\section{Concepts}
+	
+	\section{Equations}
+	
+
+	
+	
+	
+	\subsection{Euler-Lagrange Eq.'s}
+	
+	Euler-Lagrange Equations
+	
+	For one coordinate $q$
+	\[
+	\frac{d}{dt} \frac{\partial \mathcal{L}}{\partial \dot{q}} - \frac{\partial \mathcal{L}}{\partial q}= 0
+	\]
+	
+	\subsection{Invariance of the Lagrangian}
+	
+	For the two Lagrangians 
+	\[
+	\mathcal{L} = T - V
+	\]
+	and 
+	\[
+	\mathcal{L}' = T - V + \frac{d f(x,t)}{dt}
+	\]
+	the dynamics are exactly the same for \textit{any} function $f(x,t)$. 
+	
+	\subsection{Parallel Axis Theorem}
+	\textbf{Also called Steiner's Theorem}
+	
+	Given the moment of inertia about the center of mass, this theorem allows us to calculate the moment of inertia about an axis offset from the center (although still pointing in the same direction). For center-of-mass MoI $I_c$, mass $M$, and axis offset $h$, the new moment of inertia is
+	\[
+	I = I_c + Mh^2
+	\]
+	
+	\subsection{Hamilton-Jacobi Equation}
+	
+	For the Hamiltonian $\mathcal{H}$
+	\[
+	H
+	\]
+	
+	\subsection{Hamilton's Eq.'s}
+	
+	\chapter{Small Oscillations}
+	
+	\section{Problem Types}
+	
+	\section{Derivations}
+	
+	\section{Concepts}
+	
+	\section{Equations}
+	
+	\chapter{Rigid Bodies}
+	
+	\section{Problem Types}
+	
+	\section{Derivations}
+	
+	\section{Concepts}
+	
+	\section{Equations}
+	
+	\chapter{Hamiltonian Dynamics}
+	
+	\section{Problem Types}
+	
+	\section{Derivations}
+	
+	\section{Concepts}
+	
+	\section{Equations}
+	
+	
+\end{document}

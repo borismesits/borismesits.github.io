@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="mystylesheet.css">
+  </head>
+  <body>
+    
+    <div id="headers">
+      
+      <h1> Category 7 Official Band Page</h1>
+      <h3> Created by B-$izzle </h3>
+    </div>
+    <div>
+    <div>
+    <p onmouseover="this.style='color:blue'" onmouseout="this.style='color:black'" >planet: aldrin</p>
+    <p onmouseover="this.style='color:red'" onmouseout="this.style='color:black'" >atmosphere: 99% vaporized essential oils, 1% argon</p>
+    <p onmouseover="this.style='color:green'" onmouseout="this.style='color:black'">life: multicelluar, chlorine-based</p>
+    </div>
+    <div id="imgsection">
+      <img src="basic unity planet.PNG">
+      
+      <p  class="bodytext important"> Here's a song, "Found My Hero", featured as the theme song of the Millenial Minute podcast.</p>
+    </div>
+	
+	<audio controls>
+		<source src="hero.wav" type="audio/wav">
+		Your browser does not support the audio element.
+	</audio>
+	<div>
+	<a href="https://www.youtube.com/channel/UCTLicHoti_5_9m-l944Ipyw/videos"> Visit our YouTube Channel</a>
+	</div>
+	<div>
+	<a href="page2.html"> Check out a second song</a> 
+	</div>
+  </body>
+</html>
+

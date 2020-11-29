@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<html>
+<head>
+    <title>Demo</title>
+    <script src="/pyodide-0.14.3/pyodide.js"></script>
+</head>
+<body>
+</body>
+    <script type="text/javascript">
+		languagePluginLoader.then(() => {
+			pyodide.loadPackage(['numpy']).then(() => {
+				pyodide.runPython(`
+					import numpy as np
+					
+					rando = np.random.rand()
+					my_string = 'Python in the browser! Random number: ' + str(rando)
+					`);
+					
+			    document.getElementById("textfield").innerText = pyodide.globals.my_string;
+			});
+      });
+
+    </script>
+
+    <div id="textfield"></div>
+<html>
