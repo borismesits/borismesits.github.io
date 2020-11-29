@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6840 64-bit) (preloaded format=pdflatex 2018.12.26)  29 NOV 2020 12:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6840 64-bit) (preloaded format=pdflatex 2018.12.26)  29 NOV 2020 13:51
 entering extended mode
 **./mechanics-equations.tex
 (mechanics-equations.tex
@@ -492,19 +492,19 @@ Chapter 5.
 
 ]
 Chapter 6.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 132.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 136.
 [13]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 132.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 136.
  (mechanics-equations.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 132.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 132.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 136.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 136.
 Package rerunfilecheck Info: File `mechanics-equations.out' has not changed.
-(rerunfilecheck)             Checksum: 36807EE23B190E158840BA364EE2BBA0;2158.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 132.
+(rerunfilecheck)             Checksum: FD293853C4118395384A33332E9434BA;2158.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 136.
  ) 
 Here is how much of TeX's memory you used:
  6708 strings out of 492970
- 96774 string characters out of 3135854
+ 96928 string characters out of 3135854
  203379 words of memory out of 3000000
  10447 multiletter control sequences out of 15000+200000
  10474 words of font info for 38 fonts, out of 3000000 for 9000
@@ -522,7 +522,7 @@ s/cm/cmr10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr5
 rogram Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program F
 iles/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files/MiKT
 eX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on mechanics-equations.pdf (13 pages, 172580 bytes).
+Output written on mechanics-equations.pdf (13 pages, 172689 bytes).
 PDF statistics:
  307 PDF objects out of 1000 (max. 8388607)
  51 named destinations out of 1000 (max. 500000)
