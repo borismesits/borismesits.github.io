@@ -27,6 +27,30 @@
 	
 	\section{Equations}
 	
+	\subsection{Arbitrary Potential Oscillation Period}
+	
+	Period (as a function of energy) for an arbitrary potential energy $V$
+	\[
+	T(E)=\sqrt{2 m} \int_{x_{1}(E)}^{x_2\left(E_{2}\right)} \frac{d x}{\sqrt{E-U(x)}}
+	\]
+	with the turning points $x_1$ and $x_2$. 
+	
+	\subsection{Virial Theorem}
+	
+	\[
+	\langle T\rangle=-\frac{1}{2} \sum_{k=1}^{N}\left\langle\mathbf{F}_{k} \cdot \mathbf{r}_{k}\right\rangle
+	\]
+	
+	\subsection{Taylor's u-Equation}
+	
+	\[
+	u^{\prime \prime}(\phi)=-u(\phi)-\frac{\mu}{\ell^{2} u(\phi)^{2}} F
+	\]
+	for a central force $F$, or, if you like
+	\[
+	F = \frac{-\partial V}{\partial r}
+	\]
+	
 	\chapter{Accelerated Coordinate Systems}
 	
 	\section{Problem Types}
@@ -42,7 +66,7 @@
 	Say we have a particle, which we can observe in an inertial frame $S$ and some other frame $S'$ (maybe non-inertial), called the \textit{body} frame, which is moving relative to the inertial frame. The position of $S'$ relative to $S$ is $\textbf{a}$. The angular velocity of $S'$ is $\bm{\omega}$ (same for both frames, as angular velocity does not depend on frame). The position of the particle in the body frame $S'$ is $\textbf{r}$ and is $\textbf{r}_0$ in $S$. Then
 	\[
 	m \left( \frac{d^2 \textbf{r}}{dt^2} \right)_{\text{body}} = m \left( \frac{d^2 \textbf{r}_0}{dt^2} \right)_{\text{inertial}}
-	- m \left( \frac{d^2 \textbf{a}}{dt^2} \right)_{\text{inertial}} - 2 m \bm{\omega} \times \left( \frac{d \textbf{r}}{dt} \right) - m \bm{\omega} \times \left( \omega \times \textbf{r} \right) - m \frac{d\omega}{dt} \times \textbf{r}
+	- m \left( \frac{d^2 \textbf{a}}{dt^2} \right)_{\text{inertial}} - 2 m \bm{\omega} \times \left( \frac{d \textbf{r}}{dt} \right) - m \bm{\omega} \times \left( \omega \times \textbf{r} \right) - m \frac{d\bm{\omega}}{dt} \times \textbf{r}
 	\]
 	Note that the $m \left( \frac{d^2 \textbf{r}_0}{dt^2} \right)_{\text{inertial}}$ term is just the external force in the inertial frame. That is, it is the term which represents the ``real'' forces. 
 	
@@ -104,13 +128,45 @@
 	\frac{d}{dx} \frac{\partial \Phi}{\partial y'} - \frac{\partial \Phi}{dy} = 0
 	\]
 	
-	
 	Note that earlier we could have changed our ``time-analogous'' coordinate and instead written
 	changing the ``time-like'' variable
 	\[
 	t_{12} = \int_1^{2} \sqrt{\frac{1 + (x')^2}{2gy} } dy
 	\]
 	\section{Derivations}
+	
+	\subsection{Gauge Invariance of EM Lagrangian}
+	
+	For a charged particle in EM fields
+	\[
+	L(r,\dot{r},t) = \frac{1}{2} m \dot{r}^2 - q \phi(r, t) + q \dot{r} \cdot A(r,t)
+	\]
+	We apply the gauge transformation 
+	\[
+	A \rightarrow A + \nabla f
+	\]
+	\[
+	\phi \rightarrow \phi - \frac{\partial f}{\partial t}
+	\]
+	We get
+	\[
+	L'(r,\dot{r},t) = \frac{1}{2} m \dot{r}^2 - q \phi(r, t) - q \frac{\partial f}{\partial t} + q \dot{r} \cdot A(r,t) + q \dot{r} \cdot \nabla f
+	\]
+	\[
+	L'(r,\dot{r},t) = L(r,\dot{r},t)  - q \frac{\partial f}{\partial t}  + q \dot{r} \cdot \nabla f
+	\]
+	\[
+	L'(r,\dot{r},t) = L(r,\dot{r},t)  - q \left(  \frac{\partial f}{\partial t}  +  \dot{r} \cdot \nabla f \right)
+	\]
+	\[
+	L'(r,\dot{r},t) = L(r,\dot{r},t)  - q \left(  \frac{\partial }{\partial t}  +  \dot{r} \cdot \nabla \right)f
+	\]
+	The term in parenthesis is the convective derivative, which is equal to the total time derivative of $f$. See extra credit problem.
+	\[
+	L'(r,\dot{r},t) = L(r,\dot{r},t)  - q \frac{df}{dt}
+	\]
+	But from class we know that adding a total time derivative to the Lagrangian does not change the dynamics. 
+
 	
 	\section{Concepts}
 	
