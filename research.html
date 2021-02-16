@@ -130,6 +130,29 @@
 				</div>
 			</footer>
 
+CREATE TABLE data(
+key SERIAL PRIMARY KEY,
+data_id VARCHAR(200),
+raw_data0 numeric ARRAY,
+raw_data1 numeric ARRAY,
+sample numeric,
+count_time numeric,
+reset_time numeric,
+avg numeric,
+threshold numeric,
+AOM_delay numeric,
+microwave_delay numeric,
+type character varying(200),
+start numeric,
+stepsize numeric,
+steps numeric,
+PTS character varying(200),
+SRS character varying(200),
+avgCount numeric,
+x_arr numeric ARRAY,
+time_stamp TIMESTAMP 
+);
+
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
 			<script src="assets/js/skel.min.js"></script>
