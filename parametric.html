@@ -28,9 +28,7 @@
 				<header>
 				<h2>Terrain Generator</h2> 
 				</header>
-				<p id='text'> You can generate your own terrain here. This is an experimental python project, so it is rather slow. Wait until the 
-				console says ready, then press Start Generator. IT TAKES ABOUT A MINUTE TO LOAD (I'm working on making it faster). 
-				When the generator has loaded, the generator controls will appear.
+				<p id='text'> Parametric amplification simulation.
 				</p>
 				<button onclick='evaluatePython()'>Start Generator</button> <!-- Button that runs the JS code! -->
 				<br>
@@ -59,139 +57,73 @@ import io, base64 # for saving the figure
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from scipy.interpolate import interp2d
 
-def noise_map(Nx, Ny, octaves, persistence, lacunarity, seed):
-    
-    #note this map has periodic boundaries and is thrice differentiable
-    
-    #octaves - the number of noise layers
-    #persistence - analgous to the coefficients of a fourier series
-    #lacunarity - rate at which higher octaves get smaller
-    
-    if (Nx < 4 or Ny < 4):
-        print('hey your grid is too small bro')
-        return
-    
-    persistence_scale = 0.5
-    lacunarity_scale = 0.3
-    
-    noise = np.zeros([Nx,Ny])
-    
-    for i in range(0,octaves):
-        n = np.min([round(1/lacunarity_scale),Nx,Ny]) + 1
-		
-        noise_n = np.random.rand(n,n)
-        
-        x = np.linspace(0,1,n+6)
-        y = np.linspace(0,1,n+6)
-        
-        noise_n_ext = np.zeros([6+n,6+n])  # plus 6 to add three points on either side, for periodic boundaries
-        
-        noise_n_ext[3:-3,3:-3] = noise_n #middle
-        noise_n_ext[0:3,0:3] = noise_n[-3:,-3:] #upper left
-        noise_n_ext[0:3,3:-3] = noise_n[-3:,:] #upper center
-        noise_n_ext[0:3,-3:] = noise_n[-3:,0:3] #upper right
-        noise_n_ext[3:-3,0:3] = noise_n[:,-3:] #center left
-        noise_n_ext[3:-3,-3:] = noise_n[:,0:3] #center right
-        noise_n_ext[-3:,0:3] = noise_n[0:3,-3:] #lower left
-        noise_n_ext[-3:,3:-3] = noise_n[0:3,:] #lower center
-        noise_n_ext[-3:,-3:] = noise_n[0:3,0:3] #lower right
-        
-        fit_factor = 6/(n+6) /2
-        
-        xI = np.linspace(fit_factor,1-fit_factor,Nx)
-        yI = np.linspace(fit_factor,1-fit_factor,Ny)
-        
-        spline_model = interp2d(x,y,noise_n_ext,kind='cubic')
-        
-        noiseInterp = spline_model(xI,yI)
-        
-        noise = noise + noiseInterp*persistence_scale
-        
-        persistence_scale = persistence_scale**persistence
-        lacunarity_scale = lacunarity_scale**lacunarity
-        
-    return noise/np.max(noise)
 
-def bimodal(vals):
-    param = 4*np.pi
-    return (vals*param + np.sin(vals*param))/param
+# This attempts to demonstrate appearance of sideband frequencies for 
+# weak parametric drive.
 
-def crater(x,y,radius,depth,terrain):
-    def hvr(r):
-        return np.sin(2*r**4)*np.exp(-r**4)
-    (nx,ny) = np.shape(terrain)
-    
-    for i in range(-2*radius+x,2*radius+x):
-        for j in range(-2*radius+y,2*radius+y):
-            R = np.sqrt((i-x)**2 + (j-y)**2)
-            terrain[i%nx,j%ny] = terrain[i%nx,j%ny] + depth*hvr(R/radius)
- 
-def craterize(terrain,amount):
-    (nx,ny) = np.shape(terrain)
-    for i in range(0, amount):
-        x = int(np.random.rand()*nx)
-        y = int(np.random.rand()*ny)
-        size = np.random.rand()**2
-        radius = int(size*30)
-        depth = np.sqrt(size)*0.1
-        crater(x,y,radius,depth,terrain)
 
-def noise(nx,ny,cutoff,release):
-    a = 1
+def f(x,t):
+        
+    x1 = x[0]
+    x2 = x[1]
     
-    x = np.linspace(0,a,nx)
-    y = np.linspace(0,a,ny)
+    isOn = 1
     
-    YY,XX = np.meshgrid(y,x)
+    beta = 1000
     
-    ZZ = np.random.rand(len(x),len(y))
+    omega_s = 100 * 2*np.pi
     
-    aa = np.fft.fft2(ZZ)
-    aa[0,0] = 0
+    omega_0 = 100 * 2*np.pi
     
-    tightness = release
+    omega_d = 200 * 2*np.pi
     
-    cutoff = cutoff*1e10
+    RHS = 0*1e7*np.cos(omega_d*t) + 1e4*np.cos(omega_s*t)
     
-    R1 = (XX**2 + YY**2)
-    R2 = ((XX-1)**2 + (YY-1)**2)
-    R3 = ((XX)**2 + (YY-1)**2)
-    R4 = ((XX-1)**2 + (YY)**2)
+    dx1dt = x2
+    dx2dt = -2*beta*x2 - (omega_0**2)* (x1 + x1**3) + RHS
     
-    WW = R1**(-tightness)*(1-np.exp(-cutoff*R1**2))
-    WW = WW + R2**(-tightness)*(1-np.exp(-cutoff*R2**2))
-    WW = WW + R3**(-tightness)*(1-np.exp(-cutoff*R3**2))
-    WW = WW + R4**(-tightness)*(1-np.exp(-cutoff*R4**2))
+    return np.array([dx1dt,dx2dt])
+
+
+
+def paramp(isOn,t,x):
     
-    WW[0,0] = 0
-    WW[-1,0] = 0
-    WW[0,-1] = 0
-    WW[-1,-1] = 0
+    dt = t[1] - t[0]
     
-    #plt.imshow(WW)
-    
-    ab = aa*WW
-    
-    terrain = np.real(np.fft.ifft2(ab))
-    
-    terrain = terrain/np.max(terrain)
-    
-    return terrain
+    for i in range(0, len(t)-1):#
+        
+        k1 = f(x[i,:], t[i])
+        k2 = f(x[i,:] + k1*dt/2, t[i] + dt/2) 
+        k3 = f(x[i,:] + k2*dt/2, t[i] + dt/2) 
+        k4 = f(x[i,:] + k3*dt, t[i] + dt) 
+        
+        x[i+1,:] = x[i,:] + (dt/6)*(k1 + 2*k2 + 2*k3 + k4)
+        
+        
+    for i in range(0,1):
+        #plt.plot(t,x[:,i]) 
+        pass
+        
+    return t[50000:], x[50000:,i]
+
 	
-def landsat(terrain,sea_level):
-    colormap = bimodal(terrain.copy())
-    
-    colormap[np.where(terrain < sea_level)] = 0.35
-    colormap[np.where(terrain < sea_level-0.05)] = 0.3
-    
-    #plt.plot_surface(colormap)
-    
-    plt.clf()
-    plt.pcolormesh(colormap,cmap='gist_earth',vmin=0.2, vmax=1.0)
-    plt.colorbar()
+def plot_paramp():
+    N = 2
+
+    t = np.linspace(0,1,1000)
+    x = np.zeros([len(t),N])
+    x0 = np.array([1,1])*0
+    x[0,:] = x0
+
+    t, x1 = paramp(True,t,x)
+
+    fig = plt.figure(1)
+
+    ax1 = fig.add_subplot(1, 1, 1)
+    ax1.grid()
+    ax1.plot(t,x1,label='paramp')
+    ax1.legend()
 
 div_container = document.createElement('div') # now we call some HTML from python to add it to the page
 div_container.innerHTML = '''
@@ -227,11 +159,8 @@ def generate_plot_img():
 	print('2')
 	persistence = 1+ 0.1*mu
 	lacunarity = 1+ 0.1*sigma
-	
-	print('start')
-	terrain = noise_map(200, 200, 6, persistence, lacunarity, seed)
-	print('end')
-	landsat(terrain,0.65)
+
+	plot_paramp()
 	print('3')
 	buf = io.BytesIO()
 	# copy the plot into the buffer
