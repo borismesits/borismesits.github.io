@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Generic - Theory by TEMPLATED</title>
+	<title>Parameteric Amplification Applet</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<link rel="stylesheet" href="assets/css/main.css" />
@@ -19,6 +19,10 @@
 				<a href="applets.html" class="logo">Back to Applets</a>
 				<nav id="nav">
 			</div>
+			<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+			<script id="MathJax-script" async
+				src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+			</script>
 		</header>
 			
 	<!-- Three -->
@@ -26,9 +30,13 @@
 				<div class="inner" id="container">		
 				<p></p>
 				<header>
-				<h2>Terrain Generator</h2> 
+				<h2>Parametric Amplification</h2> 
 				</header>
-				<p id='text'> Parametric amplification simulation.
+				<p id='text'> This solves the Duffing equation 
+				\[
+				x'' + 2 \beta x' + \omega^2 (x + x^3) = F \cos (\omega_s t)
+				\]
+				with an RK4 routine.
 				</p>
 				<button onclick='evaluatePython()'>Start Generator</button> <!-- Button that runs the JS code! -->
 				<br>
@@ -105,7 +113,7 @@ def paramp(isOn,t,x):
         #plt.plot(t,x[:,i]) 
         pass
         
-    return t[50000:], x[50000:,i]
+    return t, x
 
 	
 def plot_paramp():
