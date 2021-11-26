@@ -32,105 +32,99 @@
 				<header>
 				<h2>Parametric Amplification</h2> 
 				</header>
-				<p id='text'> This solves the Duffing equation 
+				<p id='text'> 
+				Parametric amplification is a simple concept that appears both in intuitive, everyday situations, 
+				as well as advanced technologies like lasers and quantum computers. From what I can tell, the 
+				concept is rarely introduced to undergraduates who are nevertheless well-equipped to understand it. 
+				Mathematically, parametric amplification falls under the category of nonlinear dynamics. 
+				This field focuses on equations that are famously hard to solve, but parametric amplification 
+				can readily be understood in terms of a quite straightforward example.
+				If you've ever swung on a playground swing before (and no one was pushing you!), 
+				you were using your legs to parametrically amplify your motion. Let's understand 
+				what's going on before we define what "parametric" means.
+
+				First, you and the swing comprise a pendulum, which has equation of motion
 				\[
-				x'' + 2 \beta x' + \omega^2 (x + x^3) = F \cos (\omega_s t)
+				\ddot{\theta} = \omega_0 \sin \theta
 				\]
-				with an RK4 routine.
+				where \(\theta\) is the angle you are from hanging vertical and \(\omega_0\) is the typical $\sqrt{g/l}$, where $g$ is the gravitational constant and $l$ is the length of the swing. Let's consider just small oscillations where $\sin x \approx x$ and let's also add a damping term with damping constant $\beta$.
+				\[
+				\ddot{\theta} + 2 \beta \dot{\theta} + \omega_0 \theta = 0
+				\]
+
+In classical mechanics courses, students typically study the this system with a driving term added to the right hand side, often a sinusoidal force.
+
+\[
+\ddot{\theta} + 2 \beta \dot{\theta} + \omega_0 \theta = f_0 \sin(\omega t)
+\]
+
+But there's no net force or torque on the pendulum - the pendulum can't push against itself! So we are actually not driving the syste
+
+So what do you do on a swing when you want to start moving? You start swinging your legs back and forth, extending and tucking them in over and over. 
 				</p>
-				<button onclick='evaluatePython()'>Start Generator</button> <!-- Button that runs the JS code! -->
-				<br>
-				<br>
-				<div>
-				Console:
-				</div>
-				<textarea id='output' style='width: 100%;' rows='6' disabled></textarea>
 
 				<script> <!-- this JS script runs on startup -->
     const output = document.getElementById("output");
     const text = document.getElementById("text");
 	
-	addToOutput('Starting...')
-
-	addToOutput('Initializing...')
-
-    function addToOutput(s) {
-      output.value += '>>> ' + s + '\n';
-    }
 
 	//the follwing is python code that contains almost all the python we want to do
 	code = `
 from js import document # for interacting with JS
 import io, base64 # for saving the figure
 
-import numpy as np
+from numpy import zeros, complex128, pi, array, sin, cos, linspace, exp, real
 import matplotlib.pyplot as plt
 
+def paramp(isOn, omega_s, omega_p, omega_0):
 
-# This attempts to demonstrate appearance of sideband frequencies for 
-# weak parametric drive.
-
-
-def f(x,t):
-        
-    x1 = x[0]
-    x2 = x[1]
+    N = 2
     
-    isOn = 1
+    t = linspace(0,100,1001)
     
-    beta = 1000
-    
-    omega_s = 100 * 2*np.pi
-    
-    omega_0 = 100 * 2*np.pi
-    
-    omega_d = 200 * 2*np.pi
-    
-    RHS = 0*1e7*np.cos(omega_d*t) + 1e4*np.cos(omega_s*t)
-    
-    dx1dt = x2
-    dx2dt = -2*beta*x2 - (omega_0**2)* (x1 + x1**3) + RHS
-    
-    return np.array([dx1dt,dx2dt])
-
-
-
-def paramp(isOn,t,x):
+    x = zeros([len(t),N],dtype=complex128)
     
     dt = t[1] - t[0]
     
+    x0 = array([1,1])*0.0
+    
+    x[0,:] = x0
+    
+    def f(x,t, isOn, omega_s, omega_p, omega_0):
+        
+        x1 = x[0]
+        x2 = x[1]
+        
+        beta = 1/2
+        
+        RHS = 1*exp(1j*omega_s*t)*beta**2
+        
+        dx1dt = x2
+        dx2dt = -2*beta*x2 - ((omega_0)*(1 - 0.1*isOn*sin(omega_p*t + 0)))**2 * sin(x1) + RHS
+        
+        return array([dx1dt,dx2dt])
+    
     for i in range(0, len(t)-1):#
         
-        k1 = f(x[i,:], t[i])
-        k2 = f(x[i,:] + k1*dt/2, t[i] + dt/2) 
-        k3 = f(x[i,:] + k2*dt/2, t[i] + dt/2) 
-        k4 = f(x[i,:] + k3*dt, t[i] + dt) 
+        k1 = f(x[i,:], t[i], isOn, omega_s, omega_p, omega_0)
+        k2 = f(x[i,:] + k1*dt/2, t[i] + dt/2, isOn, omega_s, omega_p, omega_0) 
+        k3 = f(x[i,:] + k2*dt/2, t[i] + dt/2, isOn, omega_s, omega_p, omega_0) 
+        k4 = f(x[i,:] + k3*dt, t[i] + dt, isOn, omega_s, omega_p, omega_0) 
         
         x[i+1,:] = x[i,:] + (dt/6)*(k1 + 2*k2 + 2*k3 + k4)
         
-        
-    for i in range(0,1):
-        #plt.plot(t,x[:,i]) 
-        pass
-        
-    return t, x
+    return t, x[:,0]
 
 	
-def plot_paramp():
-    N = 2
+def plot_paramp(omega_s, omega_p, omega_0):
 
-    t = np.linspace(0,1,1000)
-    x = np.zeros([len(t),N])
-    x0 = np.array([1,1])*0
-    x[0,:] = x0
-
-    t, x1 = paramp(True,t,x)
+    t, x1 = paramp(True, omega_s, omega_p, omega_0)
 
     fig = plt.figure(1)
 
     ax1 = fig.add_subplot(1, 1, 1)
     ax1.grid()
-    ax1.plot(t,x1,label='paramp')
+    ax1.plot(t,real(x1),label='paramp')
     ax1.legend()
 
 div_container = document.createElement('div') # now we call some HTML from python to add it to the page
@@ -140,35 +134,52 @@ div_container.innerHTML = '''
 <h> Generator Ready!
 </h>
 <p>
-These are the generator controls. The persistence and lacunarity are two numbers that determine the style of terrain - mess around to see what you get! I
-personally like both values set to 3.
+Let's simulate the driven harmonic oscillator.
 </p>
 <br>
-Persistence:
-<input id='mu' value='1' type="number">
+Signal Frequency \(\omega_s\):
+<input id='omega_s' value='1' type="number">
 <br><br>
-Lacunarity:
-<input id='sigma' value='1' type="number">
+Parameteric Pump Frequency \(\omega_p\):
+<input id='omega_0' value='1' type="number">
 <br><br>
-Seed:
-<input id='seed' value='1' type="number">
+Resonance Frequency \(\omega_0\):
+<input id='omega_p' value='1' type="number">
 <br><br>
 <button onclick='pyodide.globals.generate_plot_img()'>Plot</button>
 <br>
 <img id="fig" />''' 
+
+div_container2 = document.createElement('div') # now we call some HTML from python to add it to the page
+div_container2.innerHTML = '''
+<br>
+<br>
+<p>
+Here's another simulation.
+</p>
+<br>
+Parameter 1
+<input id='A' value='1' type="number">
+<br><br>
+Parameter 2
+<input id='B' value='1' type="number">
+<br><br>
+Parameter 3
+<input id='c' value='1' type="number">
+''' 
+
+
 document.getElementById("container").appendChild(div_container)
+document.getElementById("container").appendChild(div_container2)
 
 def generate_plot_img():
 	# get values from inputs
 	print('1')
-	mu = int(document.getElementById('mu').value)
-	sigma = int(document.getElementById('sigma').value)  # generate an interval
-	seed = int(document.getElementById('seed').value)  # generate an interval
+	omega_s = int(document.getElementById('omega_s').value)
+	omega_0 = int(document.getElementById('omega_0').value)  # generate an interval
+	omega_p = int(document.getElementById('omega_p').value)  # generate an interval
 	print('2')
-	persistence = 1+ 0.1*mu
-	lacunarity = 1+ 0.1*sigma
-
-	plot_paramp()
+	plot_paramp(omega_s, omega_p, omega_0)
 	print('3')
 	buf = io.BytesIO()
 	# copy the plot into the buffer
@@ -184,13 +195,14 @@ def generate_plot_img():
 `
 //end of python code
     
-    // init pyodide
-    languagePluginLoader.then(() => { addToOutput('Ready!'); });
-
-    function evaluatePython() {
-		addToOutput('Loading Generator...');
+	function evaluatePython() {
 		console.log(pyodide.runPythonAsync(code));
     }
+	
+    // init pyodide
+    languagePluginLoader.then(() => { evaluatePython()});
+
+    
 
 	</script>
 	</div>
@@ -206,7 +218,6 @@ def generate_plot_img():
 							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
 							<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
 							<li><a href="#" class="icon fa-linkedin"><span class="label">linkedIn</span></a></li>
-							<li><a href="#" class="icon fa-pinterest-p"><span class="label">Pinterest</span></a></li>
 							<li><a href="#" class="icon fa-vimeo"><span class="label">Vimeo</span></a></li>
 						</ul>
 					</div>

@@ -33,27 +33,15 @@
 			</section>
 
 		<!-- One -->
-			<section id="one" class="wrapper">
+			<section id="three" class="wrapper special">
 				<div class="inner">
-					<div class="flex flex-2">
-						<article>
-							<header>
-								<h3>Current Research</h3>
+				<header class="align-center">
+								<h2>Current Research</h2>
 							</header>
 							<p>
-							I am currently a member of Duttlab, a group at the University of Pittsburgh dedicated to studying nitrogen-vacancy centers in dimamond
-							as an avenue for quantum computing. The group website may be found <a href='https://www.duttlab.pitt.edu/'> here</a>.
+							I began working for <a href='http://hatlab.pitt.edu/index.html'>Dr. Michael Hatridge's group</a> at the University of Pittsburgh in the
+							summer of 2021. 
 							</p>
-						</article>
-						<article>
-							<header>
-								<h3>Past Research</h3>
-							</header>
-							<p>
-							As an undergraduate I was a member of <a href='http://brancagroup.web.unc.edu/'>BrancaLab</a> at the University of North Carolina. I also spent two summers
-							collaborating with researchers at the <a href='https://www.eli-alps.hu/'>ELI-ALPS facility</a> in Szeged, Hungary. 
-							</p>
-						</article>
 					</div>
 				</div>
 			</section>
@@ -66,6 +54,22 @@
 						<h2>Past Project Descriptions</h2>
 					</header>
 					<div class="flex flex-2">
+						<article>
+							<div class="image fit">
+								<img src="images/efnmr.jpg" alt="Pic 02" />
+							</div>
+							<header>
+								<h3>Earth's Field Nuclear Magnetic Resonance Spectroscopy</h3>
+							</header>
+							<p>
+							A long term “free-induction decay” experiment, but using earth’s field (not a big coil) and low-cost items. I rebuilt the
+							electronics several times iterative process, all in the goal improving performance and signal-noise ratio. 
+							This was the subject of an undergraduate honors thesis.
+							</p>
+							<footer>
+								<a href="https://cdr.lib.unc.edu/concern/honors_theses/hq37vt927" class="button special">Undergraduate Dissertation</a>
+							</footer>
+						</article>
 						<article>
 							<div class="image fit">
 								<img src="images/pca.png" alt="Pic 01" />
@@ -83,23 +87,6 @@
 							<br>
 						</article>
 						<br>
-						<article>
-							<div class="image fit">
-								<img src="images/efnmr.jpg" alt="Pic 02" />
-							</div>
-							<header>
-								<h3>Earth's Field Nuclear Magnetic Resonance Spectroscopy</h3>
-							</header>
-							<p>
-							A long term “free-induction decay” experiment, but using earth’s field (not a big coil) and low-cost items. I rebuilt the
-							electronics several times iterative process, all in the goal improving performance and signal-noise ratio. 
-							This was the subject of an undergraduate honors thesis.
-							</p>
-							<footer>
-								<a href="https://cdr.lib.unc.edu/concern/honors_theses/hq37vt927" class="button special">Undergraduate Dissertation</a>
-							</footer>
-						</article>
-						
 						<article>
 							<div class="image fit">
 								<img src="images/ttm.png" alt="Pic 02" />
@@ -129,29 +116,6 @@
 					</div>
 				</div>
 			</footer>
-
-CREATE TABLE data(
-key SERIAL PRIMARY KEY,
-data_id VARCHAR(200),
-raw_data0 numeric ARRAY,
-raw_data1 numeric ARRAY,
-sample numeric,
-count_time numeric,
-reset_time numeric,
-avg numeric,
-threshold numeric,
-AOM_delay numeric,
-microwave_delay numeric,
-type character varying(200),
-start numeric,
-stepsize numeric,
-steps numeric,
-PTS character varying(200),
-SRS character varying(200),
-avgCount numeric,
-x_arr numeric ARRAY,
-time_stamp TIMESTAMP 
-);
 
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
