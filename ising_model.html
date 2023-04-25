@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ising Model Applet</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="assets/css/main.css" />
+	<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+	<style>
+	.flex-container-app {
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
+	}
+
+	.flex-container-app > div {
+	  background-color: #f1f1f1;
+	  margin: 10px;
+	  text-align: center;
+	  align-items: center;
+	}
+	</style>
+</head>
+
+<body class="subpage">
+	<script defer onload="console.log(`${pyscript.version}`)" src="https://pyscript.net/latest/pyscript.js"></script>
+
+	<!-- Header -->
+		<header id="header">
+			<div class="inner">
+				<a href="applets.html" class="logo">Back to Applets</a>
+				<nav id="nav">
+			</div>
+			<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+			<script id="MathJax-script" async
+				src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+			</script>
+		</header>
+			
+	<!-- Three -->
+			<section id="three" class="wrapper">
+				<div class="inner" id="container">		
+				<p></p>
+				<header>
+				<h2>Ising Model</h2> 
+				</header>
+				<p id='text'> 
+				The Ising model is an important idea at the intersection of many areas of physics and math. In its most literal form, it is a simple model for
+				magnetism in materials. Namely, by adjusting three parameters of the model
+				<ul>
+					<li>temperature \(T\)</li>
+					<li>coupling strength \(J\)</li>
+					<li>external magnetic field \(B\)</li>
+				</ul> 
+				
+				we can qualitatively recreate features of ferromagnetism and paramagnetism. It works by imagining a lattice of magnetic dipoles, which can be in 
+				one of two states or orientations - let's call them up and down.
+				The dipole states respons
+				to the external magnetic field \(B\) and to the magnetic influence of their nearest neighbors. This influence could be dependent on dipole moment of
+				the dipoles and the distance between neighbors, but we just combine these as the parameter \(J\). For example, large \(J\) means that a dipole in the
+				up state will strongly influence its neighbors to also be in the up state.
+				Finally, the model can take another parameter representing temperature \(T\), which adds randomly perturbs some dipoles to flip their state.
+				</p>
+				
+				<p>
+				Beyond classical magnetism, the Ising model shows up in the study of universality and critical phenomena.
+				</p>
+				
+				<h3>
+				Run the Ising model in browser
+				</h3>
+				<p id='text'>
+				The simulation is achieved by iterating through states at discrete timesteps. The color of the squares on the grid 
+				represent the up or positive (dark colored) and down or negative (light colored) states of individual dipoles.
+				The most interesting behavior happens when \(B=0\) and \(J\) is somewhat 
+				larger than \(R\). This corresponds to a regime where domains of mostly up and mostly down states coexist, and random fluctuations cause the shape
+				of these domains to evolve over time.
+				</p>
+				
+				<p id='text'>
+				I haven't added units to anything - maybe I'll get to that some day.
+				</p>
+				
+				<p id='text'>
+				Be careful with the array size; it's a good way to cause CPU spikes :)
+				</p>
+				
+				<div class="flex-container-app">
+				
+					<div>
+					<canvas id="arrayCanvas" width="500" height="500"></canvas>
+					</div>
+					
+					
+					<div>
+					<input type="button" onclick='toggle_sim()' value="Turn Simulation On/Off" id="toggle_button">
+					<input type="button" onclick='reset()' value="Reset Simulation" id="do-math">
+					
+					
+					<div style='padding:40px'>
+						<p>Coupling Strength \(J\): <b id="jValue">0</b>
+						<br>
+						<input type="range" min="0" max="100" value="0" id="jSlider">
+						</p>
+						
+						<p>Magnetic Field \(B\): <b id="bValue">0</b>
+						<br>
+						<input type="range" min="-100" max="100" value="0" id="bSlider">
+						</p>
+
+						<p>Temperature \(T\): <b id="rValue">0</b>
+						<br>
+						<input type="range" min="0" max="100" value="0" id="rSlider">
+						</p>
+						
+						<p>Array Size: <b id="sizeValue">50</b>
+						<br>
+						<input type="range" min="5" max="500" value="50" id="sizeSlider">
+						</p>
+					</div>
+					</div>
+
+				</div>
+				
+			<h3>
+			Regimes of the model
+			</h3>
+			<p id='text'>
+			A paramagnet, theoretically speaking, is an object that tends to align its own magnetic dipole moment with that of an external field. Here the "object"
+			is the ensemble of states represented by colored squares on a grid. Set the temperature
+			much higher than the coupling, and then adjust the magnetic field. The color of the squares should follow your input after some finite response time.
+			This behavior is what we might call the "boring" regime.
+			</p>
+			
+			<p id='text'>
+			A ferromagnet, in constrast, exhibits hysteresis, which means that the magnetic dipole moment of the ensemble depends on the past state. If the coupling is 
+			much larger than the temperature, than it is possible to have most of the squares be anti-aligned with the magnetic field you set. However, making the field 
+			stronger will eventually overpower the coupling.
+			</p>
+
+		<py-config type="json">
+				{
+				  "packages": ["numpy", "matplotlib"]
+				}
+			</py-config>
+			<py-script>
+		from js import createObject
+		from pyodide.ffi import create_proxy
+
+		createObject(create_proxy(globals()), "pyodideGlobals")
+
+		import numpy as np
+		import js
+		from pyodide.ffi import create_proxy
+		from random import randint
+
+		class Sim():
+			def __init__(self, size):
+				self.SS = np.random.rand(size,size)-0.5
+				self.SS = np.round(self.SS*0.5+0.5)*2-1
+				
+			def get_SS(self):
+				return SS.tolist()
+				
+			def Ising_step(self, J, B, R):
+				'''
+				Parameters
+				----------
+				J : float
+					coupling.
+				B : float
+					external field.
+				R : float
+					amplitude of random fluctuations.
+
+				Returns
+				-------
+				updated SS array
+				'''
+				
+				R = R+1e-4
+				
+				k_B = 1
+				
+				SS = self.SS
+				
+				m,n = np.shape(self.SS)
+				
+				Z = 0
+				
+				NW = SS[0:-2,0:-2]
+				N = SS[0:-2,1:-1]
+				NE = SS[0:-2,2:]
+				W = SS[1:-1,0:-2]
+				E = SS[1:-1,2:]
+				SW = SS[2:,0:-2]
+				S = SS[2:,1:-1]
+				SE = SS[2:,2:]
+				
+				Jterm = np.zeros([m,n])
+				
+				Jterm[1:-1,1:-1] = (NW+N+NE+W+E+SW+S+SE)/8 * J
+						
+				SSfloat = Jterm + B + R*(np.random.normal(size=[m,n]))
+				
+				SSn = np.round(SSfloat*0.5+0.5)*2-1
+				
+				canonicalE = -(Jterm + B)*SSn
+				
+				Z += np.exp(-1/R * canonicalE) # note that R is basically k_B T
+				
+				self.SS = SSn
+					
+			</py-script>
+			<script defer>
+			
+				const canvas = document.getElementById('arrayCanvas');
+				const ctx = canvas.getContext('2d');
+				
+				const canvas_width = canvas.width;
+				const canvas_height = canvas.height;
+			
+				let J = 0;
+				let B = 0;
+				let R = 0;
+
+				// Get slider elements
+				const jSlider = document.getElementById("jSlider");
+				const bSlider = document.getElementById("bSlider");
+				const rSlider = document.getElementById("rSlider");
+				const sizeSlider = document.getElementById("sizeSlider");
+				
+				var arraySize = 50;
+				var cellSize = canvas_width/arraySize;
+
+				// Get value display elements
+				const jValue = document.getElementById("jValue");
+				const bValue = document.getElementById("bValue");
+				const rValue = document.getElementById("rValue");
+				const sizeValue = document.getElementById("sizeValue");
+				
+				var intervalId = 0;
+				var isRunning = false;
+
+				// Function to update global variables and display values
+				function updateVariables() {
+					J = parseInt(jSlider.value)/100;
+					B = parseInt(bSlider.value)/1000;
+					R = parseInt(rSlider.value)/100;
+					arraySize = parseInt(sizeSlider.value);
+					cellSize = canvas_width/arraySize;
+
+					// Display current values
+					jValue.innerHTML = J;
+					bValue.innerHTML = B;
+					rValue.innerHTML = R;
+					sizeValue.innerHTML = arraySize;
+				}
+
+				// Add event listeners to sliders
+				jSlider.addEventListener("input", updateVariables);
+				bSlider.addEventListener("input", updateVariables);
+				rSlider.addEventListener("input", updateVariables);
+				sizeSlider.addEventListener("input", updateVariables);
+				sizeSlider.addEventListener("input", reset);
+				
+				var sim;
+				var array;
+				
+				initialize();
+				
+				function initialize(){
+				
+					try {
+						var sim = pyscript.interpreter.globals.get('Sim')(arraySize);
+						var array = sim.SS.toJs();
+						reset();
+					} catch  {
+						console.log('not loaded yet')
+						setTimeout(initialize, 300); 
+					}
+				}
+				
+				
+				function drawArray(array) {
+				
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+					for (let i = 0; i < array.length; i++) {
+						for (let j = 0; j < array[i].length; j++) {
+							const value = array[i][j];
+
+							ctx.fillStyle = `rgba(95, 95, 95, ${value})`;
+							ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+						}
+					}
+				}
+				
+				function createObject(object, variableName){
+					//Bind a variable whose name is the string variableName
+					// to the object called 'object'
+					let execString = variableName + " = object"
+					console.log("Running '" + execString + "'");
+					eval(execString)
+				}
+
+				function reset(){
+					sim = pyscript.interpreter.globals.get('Sim')(arraySize);
+					array = sim.SS.toJs();
+					drawArray(array);
+				}
+				
+				function iterate(){
+					
+					sim.Ising_step(J,B,R);
+					array = sim.SS.toJs();
+					drawArray(array);
+				}
+				
+				function start_sim() {
+					console.log(intervalId);
+					console.log(isRunning);
+					intervalId = setInterval(iterate, 30);
+				}
+				
+				function stop_sim() {
+					console.log(intervalId);
+					console.log(isRunning);
+					clearInterval(intervalId);
+					
+				}
+				
+				function toggle_sim() {
+					console.log(intervalId);
+					console.log(isRunning);
+					if (isRunning===true){
+						
+						stop_sim();
+						isRunning=false;
+					} else {
+						
+						start_sim();
+						isRunning=true;
+					}
+				}
+			</script>
+				
+	</div>
+	</section>
+  <!-- Footer -->
+			<footer id="footer">
+				<div class="inner">
+					<div class="flex">
+						<div class="copyright">
+							&copy; Untitled. Design: <a href="https://templated.co">TEMPLATED</a>. Images: <a href="https://unsplash.com">Unsplash</a>.
+						</div>
+						<ul class="icons">
+							<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+							<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+							<li><a href="#" class="icon fa-linkedin"><span class="label">linkedIn</span></a></li>
+							<li><a href="#" class="icon fa-vimeo"><span class="label">Vimeo</span></a></li>
+						</ul>
+					</div>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/skel.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+</body>
+
+</html>
